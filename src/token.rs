@@ -1,14 +1,14 @@
 #[derive(Debug, Clone)]
 pub struct Token {
     pub token_type: TokenType,
-    pub literal: String
+    pub literal: String,
 }
 
 impl Token {
     pub fn new(token_type: TokenType, literal: &str) -> Self {
         Self {
             token_type,
-            literal: literal.to_string()
+            literal: literal.to_string(),
         }
     }
 }
@@ -29,13 +29,13 @@ pub enum TokenType {
     Until,
     Write,
     End,
-    
+
     LessThan,
     Assign,
     EqualLessThan,
     Equal,
 
-    Plus,
+    Mul,
     Minus,
     Add,
     Divide,
@@ -55,4 +55,3 @@ pub fn look_up_keywords(ident: &str) -> TokenType {
         _ => TokenType::Ident,
     }
 }
-

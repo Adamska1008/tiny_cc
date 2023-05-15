@@ -1,7 +1,10 @@
-use crate::ast::{AssignStatement, BlockStatement, Expression, Identifier, IfStatement, InfixExpression, Number, Program, ReadStatement, RepeatStatement, Statement, WriteStatement};
+use crate::ast::{
+    AssignStatement, BlockStatement, Expression, Identifier, IfStatement, InfixExpression, Number,
+    Program, ReadStatement, RepeatStatement, Statement, WriteStatement,
+};
 use crate::lexer::Lexer;
-use crate::token::{Token, TokenType};
 use crate::token::TokenType::Until;
+use crate::token::{Token, TokenType};
 
 pub struct Parser {
     lexer: Lexer,
@@ -12,17 +15,14 @@ impl Parser {
     pub fn new(input: &str) -> Self {
         let mut lexer = Lexer::new(input);
         let peek = lexer.next_token();
-        Self {
-            lexer,
-            peek
-        }
+        Self { lexer, peek }
     }
 
     fn peek_token(&self) -> Token {
         self.peek.clone()
     }
 
-    fn next_token(&mut self) -> Token{
+    fn next_token(&mut self) -> Token {
         let cur = self.peek_token();
         self.peek = self.lexer.next_token();
         cur
@@ -44,20 +44,28 @@ impl Parser {
             TokenType::Repeat => Box::new(self.parse_repeat_statement()),
             TokenType::Read => Box::new(self.parse_read_statement()),
             TokenType::Write => Box::new(self.parse_write_statement()),
-            _ => panic!("the token type represents no statement:{:?}", self.peek_token().token_type)
+            _ => panic!(
+                "the token type represents no statement:{:?}",
+                self.peek_token().token_type
+            ),
         }
     }
 
     fn parse_assign_statement(&mut self) -> AssignStatement {
-        let ident = self.next_token();// 一定是 TokenType::Ident
+        let ident = self.next_token(); // 一定是 TokenType::Ident
         if self.peek_token().token_type != TokenType::Assign {
-            panic!("expected TokenType::Assign, found: {:?}", self.peek_token().token_type);
+            panic!(
+                "expected TokenType::Assign, found: {:?}",
+                self.peek_token().token_type
+            );
         }
-        self.next_token();  // pass :=
+        self.next_token(); // pass :=
         let right_exp = self.parse_expression();
         self.next_token(); // pass ;
         AssignStatement {
-            name: Identifier { value: ident.literal },
+            name: Identifier {
+                value: ident.literal,
+            },
             value: right_exp,
         }
     }
@@ -66,15 +74,15 @@ impl Parser {
         self.next_token(); // pass If
         let cond = self.parse_expression();
         if self.peek_token().token_type != TokenType::Then {
-            panic!("expected TokenType::Then, found: {:?}", self.peek_token().token_type);
+            panic!(
+                "expected TokenType::Then, found: {:?}",
+                self.peek_token().token_type
+            );
         }
         self.next_token(); // pass then
         let consequence = self.parse_block_statement();
         self.next_token(); // pass end
-        IfStatement {
-            cond,
-            consequence,
-        }
+        IfStatement { cond, consequence }
     }
 
     fn parse_repeat_statement(&mut self) -> RepeatStatement {
@@ -83,10 +91,7 @@ impl Parser {
         self.next_token(); // pass until
         let cond = self.parse_expression();
         self.next_token(); // pass ;
-        RepeatStatement {
-            cond,
-            consequence,
-        }
+        RepeatStatement { cond, consequence }
     }
 
     fn parse_read_statement(&mut self) -> ReadStatement {
@@ -94,7 +99,9 @@ impl Parser {
         let ident = self.next_token();
         self.next_token(); // pass ;
         ReadStatement {
-            name: Identifier{value: ident.literal}
+            name: Identifier {
+                value: ident.literal,
+            },
         }
     }
 
@@ -103,16 +110,18 @@ impl Parser {
         let ident = self.next_token();
         self.next_token(); // pass ;
         WriteStatement {
-            name: Identifier{value: ident.literal}
+            name: Identifier {
+                value: ident.literal,
+            },
         }
     }
 
     // 解析到End或Until为止；并且不会消耗这两个token
     fn parse_block_statement(&mut self) -> BlockStatement {
-        let mut block = BlockStatement {
-            statements: vec![],
-        };
-        while self.peek_token().token_type != TokenType::End && self.peek_token().token_type != Until {
+        let mut block = BlockStatement { statements: vec![] };
+        while self.peek_token().token_type != TokenType::End
+            && self.peek_token().token_type != Until
+        {
             let stmt = self.parse_statement();
             block.statements.push(stmt);
         }
@@ -122,7 +131,9 @@ impl Parser {
     // 注意到标准代码中只出现了两种表达式：单元、双元，没有复合表达式，故暂不考虑
     fn parse_expression(&mut self) -> Box<dyn Expression> {
         let left = self.parse_prefix_expression();
-        if self.peek_token().token_type != TokenType::SemiColon && self.peek_token().token_type != TokenType::Then {
+        if self.peek_token().token_type != TokenType::SemiColon
+            && self.peek_token().token_type != TokenType::Then
+        {
             let op = self.next_token();
             Box::new(self.parse_infix_expression(op, left))
         } else {
@@ -134,7 +145,10 @@ impl Parser {
         match self.peek_token().token_type {
             TokenType::Ident => Box::new(self.parse_ident()),
             TokenType::Number => Box::new(self.parse_number()),
-            _ => panic!("token type: {:?} is not prefix expression", self.peek_token().token_type)
+            _ => panic!(
+                "token type: {:?} is not prefix expression",
+                self.peek_token().token_type
+            ),
         }
     }
 
@@ -154,7 +168,7 @@ impl Parser {
 
     fn parse_number(&mut self) -> Number {
         Number {
-            value: self.next_token().literal.parse().unwrap()
+            value: self.next_token().literal.parse().unwrap(),
         }
     }
 }

@@ -1,15 +1,15 @@
-use crate::token::{Token, TokenType, self};
+use crate::token::{self, Token, TokenType};
 
 pub struct Lexer {
     input: Vec<char>,
-    pos: i32
+    pos: i32,
 }
 
 impl Lexer {
-    pub fn new(input :&str) -> Self {
+    pub fn new(input: &str) -> Self {
         Self {
             input: Self::remove_comment(input).chars().collect(),
-            pos: -1 
+            pos: -1,
         }
     }
 
@@ -25,14 +25,13 @@ impl Lexer {
                 } else {
                     Token::new(TokenType::LessThan, "<")
                 }
-
             }
             '=' => Token::new(TokenType::Equal, "="),
             ':' => {
                 self.next_char();
                 Token::new(TokenType::Assign, ":=")
             }
-            '*' => Token::new(TokenType::Plus, "*"),
+            '*' => Token::new(TokenType::Mul, "*"),
             '-' => Token::new(TokenType::Minus, "-"),
             '+' => Token::new(TokenType::Add, "+"),
             '/' => Token::new(TokenType::Divide, "/"),
@@ -51,7 +50,7 @@ impl Lexer {
                 } else {
                     Token::new(TokenType::Illegal, "")
                 }
-            }         
+            }
         }
     }
 
@@ -144,7 +143,7 @@ impl Lexer {
                 output.push(ch);
             }
         }
-        return output
+        return output;
     }
 }
 
