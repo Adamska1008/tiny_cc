@@ -6,7 +6,7 @@ pub struct Lexer {
 }
 
 impl Lexer {
-    pub fn new(input :String) -> Self {
+    pub fn new(input :&str) -> Self {
         Self {
             input: Self::remove_comment(input).chars().collect(),
             pos: -1 
@@ -34,6 +34,8 @@ impl Lexer {
             }
             '*' => Token::new(TokenType::Plus, "*"),
             '-' => Token::new(TokenType::Minus, "-"),
+            '+' => Token::new(TokenType::Add, "+"),
+            '/' => Token::new(TokenType::Divide, "/"),
             '"' => {
                 let literal = self.read_string();
                 Token::new(TokenType::String, &literal)
@@ -130,7 +132,7 @@ impl Lexer {
     }
 
     // 去除输入中的注释部分
-    fn remove_comment(input: String) -> String {
+    fn remove_comment(input: &str) -> String {
         let mut output = String::new();
         let mut in_comment = false;
         for ch in input.chars() {
@@ -165,7 +167,7 @@ if 0 < x then { don't compute if x <= 0 }
     until x = 0;
     write fact; { output factorial of x }
 end";
-        let mut l = Lexer::new(input.to_string());
+        let mut l = Lexer::new(input);
         loop {
             let token = l.next_token();
             println!("{:?}", token);

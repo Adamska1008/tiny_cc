@@ -1,4 +1,4 @@
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Token {
     pub token_type: TokenType,
     pub literal: String
@@ -37,6 +37,8 @@ pub enum TokenType {
 
     Plus,
     Minus,
+    Add,
+    Divide,
 
     SemiColon,
 }
