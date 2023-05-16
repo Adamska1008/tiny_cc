@@ -14,9 +14,7 @@ pub struct SymbolTable {
 
 impl SymbolTable {
     pub fn new() -> Self {
-        Self {
-            table: HashMap::new(),
-        }
+        Self { table: HashMap::new() }
     }
 
     // 返回名字为name的变量的内存地址

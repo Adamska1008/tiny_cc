@@ -1,16 +1,23 @@
-use std::fmt::{Display, Formatter};
+use crate::ast::NodeType::WriteStatement;
+use std::fmt::{write, Display, Formatter};
 
 // 操作码定义
 #[derive(Debug, Copy, Clone)]
 pub enum OpCode {
     LDC, // load constant: LDC a,b(c) 表示将b+c地址处的值存储到寄存器a中
     LD,  // load: LD a,b(c) 表示将b+寄存器c地址处的值存储到寄存器a中
-    ST,  // store: ST a,b(c) 表示寄存器a存储到b+寄存器c中
+    LDA,
+    ST, // store: ST a,b(c) 表示寄存器a存储到b+寄存器c中
     IN,
+    OUT,
 
     ADD, // add: ADD a,b,c 表示将寄存器b+寄存器c存储到寄存器a中，其中a、b、c恒定为累加器1、2、1
     SUB, // sub: SUB a,b,c
     MUL, // multiply: MUL a,b,c
+    DIV,
+
+    JLT,
+    JEQ,
 }
 
 impl Display for OpCode {
@@ -18,11 +25,16 @@ impl Display for OpCode {
         match self {
             OpCode::LDC => write!(f, "LDC"),
             OpCode::LD => write!(f, "LD"),
+            OpCode::LDA => write!(f, "LDA"),
             OpCode::ST => write!(f, "ST"),
             OpCode::IN => write!(f, "IN"),
+            OpCode::OUT => write!(f, "OUT"),
             OpCode::ADD => write!(f, "ADD"),
             OpCode::SUB => write!(f, "SUB"),
             OpCode::MUL => write!(f, "MUL"),
+            OpCode::DIV => write!(f, "DIV"),
+            OpCode::JLT => write!(f, "JLT"),
+            OpCode::JEQ => write!(f, "JEQ"),
         }
     }
 }
@@ -59,5 +71,12 @@ impl Into<usize> for RegisterCode {
             RegisterCode::MP => 6,
             RegisterCode::PC => 7,
         }
+    }
+}
+
+impl Display for RegisterCode {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        let number: usize = (*self).into();
+        write!(f, "{}", number)
     }
 }
